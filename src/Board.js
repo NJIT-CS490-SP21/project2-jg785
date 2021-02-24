@@ -1,10 +1,10 @@
 import React from 'react';
-import Squares from './Squares';
+import Square from './Squares';
 import './boardc.css';
 
 function Board ({ squares, onClick }) {
-  return (<div class="board">
-          {squares.map((square, i) => (<Squares key={i} value={square} onClick={() => onClick(i)}/>))}
+  return (<div className="board">
+          {squares.map((square, i) => (<Square key={i} value={square} onClick={() => onClick(i)}/>))}
           </div>
           );
 }

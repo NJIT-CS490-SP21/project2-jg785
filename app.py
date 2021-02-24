@@ -5,6 +5,7 @@ from flask_cors import CORS
 
 app = Flask(__name__, static_folder='./build/static')
 
+#Flask socket IO documentation
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 socketio = SocketIO(
@@ -31,12 +32,12 @@ def on_disconnect():
 
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
-@socketio.on('chat')
-def on_chat(data): # data is whatever arg you pass in your emit call on client
-    print(str(data))
+@socketio.on('board')
+def on_board(data): # data is whatever arg you pass in your emit call on client
+    print(data)
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
-    socketio.emit('chat',  data, broadcast=True, include_self=False)
+    socketio.emit('board',  data, broadcast=True, include_self=False)
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(
