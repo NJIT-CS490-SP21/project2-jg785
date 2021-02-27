@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Board from './Board';
 import io from 'socket.io-client';
 
@@ -10,6 +10,27 @@ function Handler () {
   const [board, set_board] = useState([Array(9).fill(null)]);
   const [index, set_index] = useState(0);
   const [x_next, set_x_next] = useState(true);
+  
+  //login state
+  const inputRef = useRef(null);
+  const [userList, setUserList] = useState([]);
+  const [isShown, setShown] = useState(true);
+  
+  function onClickAddtoList() {
+    const userText = inputRef.current.value;
+    setUserList((prevList) => {
+      const listCopy = [...prevList];
+      listCopy.push(userText);
+      return listCopy;
+    });
+  }
+  
+  function onShowHide() {
+    setShown((prevShown) => {
+      return !prevShown;
+    });
+  }
+  
   
   function clickHandler(i) {
     const inBoard = board.slice(0, index + 1);
@@ -47,10 +68,27 @@ function Handler () {
   }, []);
   
   return (
-          <>
+          <div>
           <h1>Play Tic Tac Toe, Enjoy!</h1>
-            <Board squares={board[index]} onClick={clickHandler} />
-          </>
+          <div>
+              <button onClick={() => onShowHide()}>Show/Hide list button</button>
+          </div>
+          <input ref={inputRef} type="text" />
+          <button onClick={() => onClickAddtoList()}>Add to User list</button>
+          {isShown === true ? (
+            <div>
+              <div>{userList}</div>
+              <div>
+                {userList.map((item, index) => (
+                  <li>{item}</li>
+                ))}
+              </div>
+              <Board squares={board[index]} onClick={clickHandler} />
+            </div>
+          ) : (
+            "Not True"
+          )}
+          </div>
   );
 }
 

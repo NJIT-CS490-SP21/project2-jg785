@@ -5,6 +5,9 @@ from flask_cors import CORS
 
 app = Flask(__name__, static_folder='./build/static')
 
+#Global array for users
+global users;
+
 #Flask socket IO documentation
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
