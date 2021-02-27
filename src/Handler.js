@@ -1,15 +1,22 @@
 import React from 'react';
 import { useRef, useState, useEffect } from 'react';
 import Board from './Board';
+import calculateWinner from './winner';
 import io from 'socket.io-client';
 
 const socket = io(); // Connects to socket connection io()
 
+const styles = {
+    width: '200px',
+    margin: '20px auto',
+};
+
 //use <func name /> to call func in app.js
 function Handler () {
-  const [board, set_board] = useState([Array(9).fill(null)]);
-  const [index, set_index] = useState(0);
+  const [board, set_board] = useState(Array(9).fill(null));
+  //const [index, set_index] = useState(0);
   const [x_next, set_x_next] = useState(true);
+  const winner = calculateWinner(board);
   
   //login state
   const inputRef = useRef(null);
@@ -49,21 +56,30 @@ function Handler () {
   
   
   function clickHandler(i) {
-    const inBoard = board.slice(0, index + 1);
-    const curr = inBoard[index];
-    const squares = [...curr];
+    //const inBoard = board.slice(0, index + 1);
+    //const curr = inBoard[index];
+    //const squares = [...curr];
     
     //set letter inside button
-    squares[i] = x_next ? 'X' : 'O';
-    set_board([...inBoard, squares]);
-    set_index(inBoard.length);
-    set_x_next(!x_next);
+    //squares[i] = x_next ? 'X' : 'O';
+    //set_board([...inBoard, squares]);
+    //set_index(inBoard.length);
+    //set_x_next(!x_next);
     
     //emit an event
     //var num = squares[i]
     //set_board(prevBoard => [...prevBoard, squares ]);
-    socket.emit('board', { squares: squares });
-  };
+    
+    const boardCopy = [...board];
+  	// If user click an occupied square or if game is won, return
+  	if (winner || boardCopy[i]) return;
+  	// Put an X or an O in the clicked square
+  	boardCopy[i] = x_next ? "X" : "O";
+  	set_board(boardCopy);
+  	set_x_next(!x_next);
+    
+    socket.emit('board', { squares: boardCopy });
+  }
   
   // The function inside useEffect is only run whenever any variable in the array
   // (passed as the second arg to useEffect) changes. Since this array is empty
@@ -77,11 +93,18 @@ function Handler () {
       // If the server sends a message (on behalf of another client), then we
       // add it to the list of messages to render it on the UI.
       
-      set_board([data.squares, data.squares, data.squares,
-                data.squares, data.squares, data.squares]);
+      set_board((prevBoard) => [...data.squares]);
       
     });
   }, []);
+  
+  function renderMoves () {
+      //Restart the Game
+      return( <button onClick={() => set_board(Array(9).fill(null))}>
+          Start Game
+      </button>
+      );
+  }
   
   return (
           <div>
@@ -98,7 +121,11 @@ function Handler () {
                   <li>{item}</li>
                 ))}
               </div>
-              <Board squares={board[index]} onClick={clickHandler} />
+              <Board squares={board} onClick={clickHandler} />
+              <div style={styles}>
+                <p>{winner ? "Winner: " + winner : "Next Player: " + (x_next ? "X" : "O")}</p>
+                {renderMoves()}
+              </div>
             </div>
           ) : (
             "Not True"
