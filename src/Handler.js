@@ -17,13 +17,29 @@ function Handler () {
   const [isShown, setShown] = useState(true);
   
   function onClickAddtoList() {
-    const userText = inputRef.current.value;
+    const username = inputRef.current.value;
     setUserList((prevList) => {
       const listCopy = [...prevList];
-      listCopy.push(userText);
+      listCopy.push(username);
       return listCopy;
     });
+    socket.emit('login', { username: username });
   }
+  
+  // The function inside useEffect is only run whenever any variable in the array
+  // (passed as the second arg to useEffect) changes. Since this array is empty
+  // here, then the function will only run once at the very beginning of mounting.
+  useEffect(() => {
+    // Listening for a chat event emitted by the server. If received, we
+    // run the code in the function that is passed in as the second arg
+    socket.on('login', (users) => {
+      console.log('User list received!');
+      console.log(users);
+      // If the server sends a message (on behalf of another client), then we
+      // add it to the list of messages to render it on the UI.
+      setUserList(prevUserList => [...prevUserList, users]);
+    });
+  }, []);
   
   function onShowHide() {
     setShown((prevShown) => {
@@ -74,10 +90,9 @@ function Handler () {
               <button onClick={() => onShowHide()}>Show/Hide list button</button>
           </div>
           <input ref={inputRef} type="text" />
-          <button onClick={() => onClickAddtoList()}>Add to User list</button>
+          <button onClick={() => onClickAddtoList()}>Log in</button>
           {isShown === true ? (
             <div>
-              <div>{userList}</div>
               <div>
                 {userList.map((item, index) => (
                   <li>{item}</li>
