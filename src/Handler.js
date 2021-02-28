@@ -108,7 +108,7 @@ function Handler () {
       //Restart the Game
       return( <button onClick={() => {
                         set_board(Array(9).fill(null));
-                        set_x_next(!x_next);
+                        set_x_next(true);
                       }}>
                   Start Game
               </button>
