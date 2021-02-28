@@ -23,8 +23,12 @@ function Handler () {
   const [userList, setUserList] = useState([]);
   const [isShown, setShown] = useState(true);
   
+  //username state
+  const [move, set_move] = useState(true);
+  
   function onClickAddtoList() {
     const username = inputRef.current.value;
+    //set_username = (username);
     setUserList((prevList) => {
       const listCopy = [...prevList];
       listCopy.push(username);
@@ -47,6 +51,8 @@ function Handler () {
       setUserList(prevUserList => [...prevUserList, users]);
     });
   }, []);
+  
+  
   
   function onShowHide() {
     setShown((prevShown) => {
@@ -78,7 +84,7 @@ function Handler () {
   	set_board(boardCopy);
   	set_x_next(!x_next);
     
-    socket.emit('board', { squares: boardCopy });
+    socket.emit('board', { squares: boardCopy, isXNext: x_next });
   }
   
   // The function inside useEffect is only run whenever any variable in the array
@@ -92,7 +98,7 @@ function Handler () {
       console.log(data);
       // If the server sends a message (on behalf of another client), then we
       // add it to the list of messages to render it on the UI.
-      
+      set_x_next(!data.isXNext);
       set_board((prevBoard) => [...data.squares]);
       
     });
@@ -100,9 +106,12 @@ function Handler () {
   
   function renderMoves () {
       //Restart the Game
-      return( <button onClick={() => set_board(Array(9).fill(null))}>
-          Start Game
-      </button>
+      return( <button onClick={() => {
+                        set_board(Array(9).fill(null));
+                        set_x_next(!x_next);
+                      }}>
+                  Start Game
+              </button>
       );
   }
   
