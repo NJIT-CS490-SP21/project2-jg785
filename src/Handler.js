@@ -14,28 +14,44 @@ const styles = {
 //use <func name /> to call func in app.js
 function Handler () {
   const [board, set_board] = useState(Array(9).fill(null));
-  //const [index, set_index] = useState(0);
   const [x_next, set_x_next] = useState(true);
   const winner = calculateWinner(board);
   
   //login state
   const inputRef = useRef(null);
   const [userList, setUserList] = useState([]);
-  const [isShown, setShown] = useState(true);
+  const [isShown, setShown] = useState(false);
   
-  //username state
-  const [move, set_move] = useState(true);
+  //current user state
+  const [currUser, setcurrUser] = useState();
+  
+  //spectator state
+  const [spectatorList, setSpectatorList] = useState([]);
+  const playerX = userList[0];
+  const playerY = userList[1];
   
   function onClickAddtoList() {
     const username = inputRef.current.value;
-    //set_username = (username);
-    setUserList((prevList) => {
-      const listCopy = [...prevList];
-      listCopy.push(username);
-      return listCopy;
+    if(username == ""){
+      alert("Enter a valid name.");
+      return;
+    }
+    else if(username != null){
+      setShown((prevShown) => {
+      return !prevShown;
     });
+    }
+    
+    setcurrUser((prevcurrUser)=>username);
+    console.log("currUser from login func: ", currUser);
+    
+    setUserList(prevList => [...prevList, username]);
+    //console.log(userList);
+    
     socket.emit('login', { username: username });
   }
+  
+  //console.log(userList);
   
   // The function inside useEffect is only run whenever any variable in the array
   // (passed as the second arg to useEffect) changes. Since this array is empty
@@ -45,10 +61,29 @@ function Handler () {
     // run the code in the function that is passed in as the second arg
     socket.on('login', (users) => {
       console.log('User list received!');
-      console.log(users);
+      console.log("users: ", users);
       // If the server sends a message (on behalf of another client), then we
       // add it to the list of messages to render it on the UI.
-      setUserList(prevUserList => [...prevUserList, users]);
+      const lastuser = users[users.length-1];
+      //setcurrUser((prevcurrUser)=>lastuser);
+      //console.log("currUser from useeffect: ", lastuser,currUser);
+      setUserList(prevUserList => [...prevUserList, lastuser]);
+      //const ls = [...users];
+      
+      if(users.length > 2){
+        
+        setSpectatorList((prevSpectator) => {
+        const specCopy = [...prevSpectator];
+        if(users.length > 2){
+          specCopy.push(lastuser);
+        }
+        console.log("spectatorCopy: ",specCopy);
+        return specCopy;
+        });
+        
+      }
+      
+      
     });
   }, []);
   
@@ -62,29 +97,24 @@ function Handler () {
   
   
   function clickHandler(i) {
-    //const inBoard = board.slice(0, index + 1);
-    //const curr = inBoard[index];
-    //const squares = [...curr];
-    
-    //set letter inside button
-    //squares[i] = x_next ? 'X' : 'O';
-    //set_board([...inBoard, squares]);
-    //set_index(inBoard.length);
-    //set_x_next(!x_next);
-    
-    //emit an event
-    //var num = squares[i]
-    //set_board(prevBoard => [...prevBoard, squares ]);
     
     const boardCopy = [...board];
   	// If user click an occupied square or if game is won, return
   	if (winner || boardCopy[i]) return;
   	// Put an X or an O in the clicked square
-  	boardCopy[i] = x_next ? "X" : "O";
-  	set_board(boardCopy);
-  	set_x_next(!x_next);
-    
-    socket.emit('board', { squares: boardCopy, isXNext: x_next });
+  	
+  	if(currUser === playerX || currUser === playerY){
+    	boardCopy[i] = x_next ? "X" : "O";
+    	set_board(boardCopy);
+    	set_x_next(!x_next);
+      
+      console.log("current user from click handler:", currUser);
+      console.log("player x and y", playerX, playerY);
+      console.log("spectator list:", spectatorList);
+      
+        //console.log(currUser);
+      socket.emit('board', { squares: boardCopy, isXNext: x_next });
+  	}
   }
   
   // The function inside useEffect is only run whenever any variable in the array
@@ -109,6 +139,9 @@ function Handler () {
       return( <button onClick={() => {
                         set_board(Array(9).fill(null));
                         set_x_next(true);
+                        setUserList(Array().fill(null));
+                        setSpectatorList(Array().fill(null));
+                        setShown(false);
                       }}>
                   Start Game
               </button>
@@ -133,11 +166,20 @@ function Handler () {
               <Board squares={board} onClick={clickHandler} />
               <div style={styles}>
                 <p>{winner ? "Winner: " + winner : "Next Player: " + (x_next ? "X" : "O")}</p>
+                {spectatorList.length != 0 ? (
+                <div>
+                  {spectatorList.map((item, index) => (
+                    <li>{item}</li>
+                  ))}
+                </div>
+                ) : (
+                  "No spectators have logged in yet"
+                )}
                 {renderMoves()}
               </div>
             </div>
           ) : (
-            "Not True"
+            "No Users Yet"
           )}
           </div>
   );
