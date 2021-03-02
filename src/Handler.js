@@ -45,12 +45,8 @@ function Handler () {
     setcurrUser((prevcurrUser)=>username);
     console.log("currUser from login func: ", currUser);
     
-    
-    
     setUserList(prevList => [...prevList, username]);
     //console.log(userList);
-    
-    
     
     socket.emit('login', { username: username });
   }
@@ -131,8 +127,8 @@ function Handler () {
     });
   }, []);
   
+  //Restart the Game
   function renderMoves () {
-      //Restart the Game
       return( <button onClick={() => {
                         set_board(Array(9).fill(null));
                         set_x_next(true);
@@ -207,9 +203,14 @@ function Handler () {
                 ) : (
                   "No spectators have logged in yet"
                 )}
-                { ( (winner == "X" || winner == "O") && (currUser == playerX || currUser == playerO) ) ||
-                  ( (winner != "X" || winner != "O") && (currUser == playerX || currUser == playerO) && board_is_full) ? (
-                  <div> {renderMoves()}</div>
+                { ( (winner == "X") && (currUser == playerX || currUser == playerO) )  ? (
+                  <div><br></br> Winner Username: {playerX} <br></br>{renderMoves()}</div>
+                ) : ("")}
+                { ( (winner == "O") && (currUser == playerX || currUser == playerO) )  ? (
+                  <div><br></br> Winner Username: {playerO} <br></br>{renderMoves()}</div>
+                ) : ("")}
+                { ( (winner != "X" || winner != "O") && (currUser == playerX || currUser == playerO) && board_is_full) ? (
+                  <div><br></br> It's a draw. No winner in this match. <br></br>{renderMoves()}</div>
                 ) : ("")}
               </div>
             </div>
