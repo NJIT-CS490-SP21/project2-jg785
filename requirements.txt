@@ -13,7 +13,6 @@ docutils==0.15.2
 flash==1.0.3
 Flask==1.1.2
 Flask-Cors==3.0.10
-Flask-SocketIO==5.0.1
 Flask-SQLAlchemy==2.1
 git-remote-codecommit==1.15.1
 idna==2.10
