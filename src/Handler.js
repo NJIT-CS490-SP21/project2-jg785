@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from 'react';
 import Board from './Board';
 import calculateWinner from './winner';
 import io from 'socket.io-client';
+import ParticlesBg from 'particles-bg';
 
 const socket = io(); // Connects to socket connection io()
 
@@ -182,7 +183,9 @@ function Handler () {
   console.log(board_is_full);
   
   return (
+          
           <div style={styles}>
+          <ParticlesBg type="circle" bg={true} />
           <h1>Play Tic Tac Toe, Enjoy!</h1>
           <input ref={inputRef} type="text" />
           <button onClick={() => onClickAddtoList()}>Log in</button>
@@ -213,13 +216,9 @@ function Handler () {
                 { ( (winner == "X" || winner == "O") && (currUser == playerX || currUser == playerO) )  ? (
                   <div>{renderMoves()}</div>
                 ) : ("")}
-                
-                
                 { ( (winner != "X" || winner != "O") && board_is_full ) ? (
                   <div><br></br> It's a draw. No winner in this match. <br></br></div>
                 ) : ("")}
-                
-                
                 { ( (winner != "X" || winner != "O") && (currUser == playerX || currUser == playerO) && board_is_full) ? (
                   <div>{renderMoves()}</div>
                 ) : ("")}
