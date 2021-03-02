@@ -182,14 +182,14 @@ function Handler () {
   console.log(board_is_full);
   
   return (
-          <div>
+          <div style={styles}>
           <h1>Play Tic Tac Toe, Enjoy!</h1>
           <input ref={inputRef} type="text" />
           <button onClick={() => onClickAddtoList()}>Log in</button>
           {isShown === true ? (
             <div>
               <Board squares={board} onClick={clickHandler} />
-              <div style={styles}>
+              <div>
                 <p>Player X: {playerX}</p>
                 <p>{playerO ? "Player O: " + playerO : "Player Y hasn't connected yet."}</p>
                 <p>{winner ? "Winner: " + winner : "Next Player: " + (x_next ? "X" : "O")}</p>
@@ -203,14 +203,25 @@ function Handler () {
                 ) : (
                   "No spectators have logged in yet"
                 )}
-                { ( (winner == "X") && (currUser == playerX || currUser == playerO) )  ? (
-                  <div><br></br> Winner Username: {playerX} <br></br>{renderMoves()}</div>
+                { ( (winner == "X") ) ? (
+                  <div><br></br> Winner Username: {playerX} <br></br></div>
                 ) : ("")}
-                { ( (winner == "O") && (currUser == playerX || currUser == playerO) )  ? (
-                  <div><br></br> Winner Username: {playerO} <br></br>{renderMoves()}</div>
+                { ( (winner == "O") ) ? (
+                  <div><br></br> Winner Username: {playerO} <br></br></div>
                 ) : ("")}
+                
+                { ( (winner == "X" || winner == "O") && (currUser == playerX || currUser == playerO) )  ? (
+                  <div>{renderMoves()}</div>
+                ) : ("")}
+                
+                
+                { ( (winner != "X" || winner != "O") && board_is_full ) ? (
+                  <div><br></br> It's a draw. No winner in this match. <br></br></div>
+                ) : ("")}
+                
+                
                 { ( (winner != "X" || winner != "O") && (currUser == playerX || currUser == playerO) && board_is_full) ? (
-                  <div><br></br> It's a draw. No winner in this match. <br></br>{renderMoves()}</div>
+                  <div>{renderMoves()}</div>
                 ) : ("")}
               </div>
             </div>
