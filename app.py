@@ -54,6 +54,13 @@ def on_board(data): # data is whatever arg you pass in your emit call on client
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
     socketio.emit('board',  data, broadcast=True, include_self=False)
+    
+@socketio.on('reset_game')
+def on_board(data): # data is whatever arg you pass in your emit call on client
+    print(data)
+    # This emits the 'chat' event from the server to all clients except for
+    # the client that emmitted the event that triggered this function
+    socketio.emit('reset_game',  data, broadcast=True, include_self=False)
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(
