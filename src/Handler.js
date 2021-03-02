@@ -28,7 +28,7 @@ function Handler () {
   //spectator state
   const [spectatorList, setSpectatorList] = useState([]);
   const playerX = userList[0];
-  const playerY = userList[1];
+  const playerO = userList[1];
   
   function onClickAddtoList() {
     const username = inputRef.current.value;
@@ -45,8 +45,12 @@ function Handler () {
     setcurrUser((prevcurrUser)=>username);
     console.log("currUser from login func: ", currUser);
     
+    
+    
     setUserList(prevList => [...prevList, username]);
     //console.log(userList);
+    
+    
     
     socket.emit('login', { username: username });
   }
@@ -72,23 +76,14 @@ function Handler () {
       
       if(users.length > 2){
         
-        setSpectatorList((prevSpectator) => {
-        const specCopy = [...prevSpectator];
-        if(users.length > 2){
-          specCopy.push(lastuser);
-        }
-        console.log("spectatorCopy: ",specCopy);
-        return specCopy;
-        });
-        
+        setSpectatorList(prevUserList => [...prevUserList, lastuser]);
       }
       
       
     });
   }, []);
   
-  
-  
+  //not using this function now
   function onShowHide() {
     setShown((prevShown) => {
       return !prevShown;
@@ -103,13 +98,15 @@ function Handler () {
   	if (winner || boardCopy[i]) return;
   	// Put an X or an O in the clicked square
   	
-  	if(currUser === playerX || currUser === playerY){
+  	//Only allow first and second user to play. Other players that login,
+  	//are spectators.
+  	if(currUser === playerX || currUser === playerO){
     	boardCopy[i] = x_next ? "X" : "O";
     	set_board(boardCopy);
     	set_x_next(!x_next);
       
       console.log("current user from click handler:", currUser);
-      console.log("player x and y", playerX, playerY);
+      console.log("player x and y", playerX, playerO);
       console.log("spectator list:", spectatorList);
       
         //console.log(currUser);
@@ -142,32 +139,45 @@ function Handler () {
                         setUserList(Array().fill(null));
                         setSpectatorList(Array().fill(null));
                         setShown(false);
+                        
                       }}>
-                  Start Game
+                  Play Again!
               </button>
       );
   }
   
+  //Place in line 156 is want show/hide button
+  //<div>
+  //    <button onClick={() => onShowHide()}>Show/Hide list button</button>
+  //</div>
+  
+  //To show user list place inside isShow === true
+  
+  //<div>
+  //  {userList.map((item, index) => (
+  //    <li>{item}</li>
+  //  ))}
+  //</div>
+  
+  //Check if board is full
+  const board_is_full = board.every(element => element !== null);
+  console.log(board_is_full);
+  
   return (
           <div>
           <h1>Play Tic Tac Toe, Enjoy!</h1>
-          <div>
-              <button onClick={() => onShowHide()}>Show/Hide list button</button>
-          </div>
           <input ref={inputRef} type="text" />
           <button onClick={() => onClickAddtoList()}>Log in</button>
           {isShown === true ? (
             <div>
-              <div>
-                {userList.map((item, index) => (
-                  <li>{item}</li>
-                ))}
-              </div>
               <Board squares={board} onClick={clickHandler} />
               <div style={styles}>
+                <p>Player X: {playerX}</p>
+                <p>{playerO ? "Player O: " + playerO : "Player Y hasn't connected yet."}</p>
                 <p>{winner ? "Winner: " + winner : "Next Player: " + (x_next ? "X" : "O")}</p>
                 {spectatorList.length != 0 ? (
                 <div>
+                  Spectators:
                   {spectatorList.map((item, index) => (
                     <li>{item}</li>
                   ))}
@@ -175,7 +185,10 @@ function Handler () {
                 ) : (
                   "No spectators have logged in yet"
                 )}
-                {renderMoves()}
+                { ( (winner == "X" || winner == "O") && (currUser == playerX || currUser == playerO) ) ||
+                  ( (winner != "X" || winner != "O") && (currUser == playerX || currUser == playerO) && board_is_full) ? (
+                  <div> {renderMoves()}</div>
+                ) : ("")}
               </div>
             </div>
           ) : (
