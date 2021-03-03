@@ -50,6 +50,7 @@ function Handler () {
     //console.log(userList);
     
     socket.emit('login', { username: username });
+    inputRef.current.value = "";
   }
   
   //console.log(userList);
