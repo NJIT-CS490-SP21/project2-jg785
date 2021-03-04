@@ -49,7 +49,14 @@ function Handler () {
     setUserList(prevList => [...prevList, username]);
     //console.log(userList);
     
+    if(userList.length >= 2){
+        
+      setSpectatorList(prevUserList => [...prevUserList, username]);
+    }
+    
     socket.emit('login', { username: username });
+    
+    //Will make input box empty after user logs in
     inputRef.current.value = "";
   }
   
@@ -74,8 +81,9 @@ function Handler () {
       
       if(users.length > 2){
         
-        setSpectatorList(prevUserList => [...prevUserList, lastuser]);
+      setSpectatorList(prevUserList => [...prevUserList, lastuser]);
       }
+      
       
       
     });
@@ -205,7 +213,7 @@ function Handler () {
                   ))}
                 </div>
                 ) : (
-                  "No spectators have logged in yet"
+                  "No spectators have logged in yet."
                 )}
                 { ( (winner == "X") ) ? (
                   <div><br></br> Winner Username: {playerX} <br></br></div>
