@@ -1,6 +1,6 @@
 # Flask and create-react-app
 
-Jhon Garcia - Project 2 Milestone 1 - TicTacToe
+Jhon Garcia - Project 2 Milestone - TicTacToe
 
 March 1, 2021.
 
@@ -26,4 +26,5 @@ March 1, 2021.
 ## Issues & How I Solved them
 1. Had a lot of problems with the socket connection. - Did research and watched youtube videos.
 2. Logic for the board and player x and o. - Looked up methods online.
+3. Spectator login not showing when they log in. - Added spectator after they log in.
 
