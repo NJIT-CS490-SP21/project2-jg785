@@ -50,7 +50,6 @@ function Handler () {
     //console.log(userList);
     
     if(userList.length >= 2){
-        
       setSpectatorList(prevUserList => [...prevUserList, username]);
     }
     
@@ -80,14 +79,16 @@ function Handler () {
       //const ls = [...users];
       
       if(users.length > 2){
-        
-      setSpectatorList(prevUserList => [...prevUserList, lastuser]);
+        setSpectatorList(prevUserList => [...prevUserList, lastuser]);
       }
       
-      
+      console.log("userlist from useEffect",userList);
       
     });
   }, []);
+  
+  //console.log("userList after useeffect", userList);
+  //console.log("spectator list after use effect", spectatorList);
   
   //not using this function now
   function onShowHide() {
@@ -95,7 +96,6 @@ function Handler () {
       return !prevShown;
     });
   }
-  
   
   function clickHandler(i) {
     
@@ -112,25 +112,19 @@ function Handler () {
     	set_x_next(!x_next);
       
       console.log("current user from click handler:", currUser);
-      console.log("player x and y", playerX, playerO);
-      console.log("spectator list:", spectatorList);
+      console.log("player x and o", playerX, playerO);
+      //console.log("spectator list:", spectatorList);
       
         //console.log(currUser);
       socket.emit('board', { squares: boardCopy, isXNext: x_next });
   	}
   }
   
-  // The function inside useEffect is only run whenever any variable in the array
-  // (passed as the second arg to useEffect) changes. Since this array is empty
-  // here, then the function will only run once at the very beginning of mounting.
   useEffect(() => {
-    // Listening for a chat event emitted by the server. If received, we
-    // run the code in the function that is passed in as the second arg
     socket.on('board', (data) => {
       console.log('Board event received!');
       console.log(data);
-      // If the server sends a message (on behalf of another client), then we
-      // add it to the list of messages to render it on the UI.
+      
       set_x_next(!data.isXNext);
       set_board((prevBoard) => [...data.squares]);
       
@@ -143,7 +137,7 @@ function Handler () {
                         set_board(Array(9).fill(null));
                         set_x_next(true);
                         setUserList(Array().fill(null));
-                        setSpectatorList(Array().fill(null));
+                        setSpectatorList([]);
                         setShown(false);
                         
                         socket.emit('reset_game', Array(9).fill(null));
@@ -154,16 +148,9 @@ function Handler () {
       );
   }
   
-  // The function inside useEffect is only run whenever any variable in the array
-  // (passed as the second arg to useEffect) changes. Since this array is empty
-  // here, then the function will only run once at the very beginning of mounting.
   useEffect(() => {
-    // Listening for a chat event emitted by the server. If received, we
-    // run the code in the function that is passed in as the second arg
     socket.on('reset_game', (data) => {
       console.log("data", data);
-      // If the server sends a message (on behalf of another client), then we
-      // add it to the list of messages to render it on the UI.
       
       set_board(prevBoard => data);
       set_x_next(true);

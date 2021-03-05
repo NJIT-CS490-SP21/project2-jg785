@@ -34,32 +34,32 @@ def on_connect():
 def on_disconnect():
     print('User disconnected!')
 
-# When a client emits the event 'chat' to the server, this function is run
-# 'chat' is a custom event name that we just decided
+# When a client emits the event 'login' to the server, this function is run
+# 'login' is a custom event name that we just decided
 @socketio.on('login')
 def on_login(data): # data is whatever arg you pass in your emit call on client
     print(str(data))
-    # This emits the 'chat' event from the server to all clients except for
+    # This emits the 'login' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
     #append username to array
     users.append(data["username"]);
     print(data["username"]);
     socketio.emit('login',  users, broadcast=True, include_self=False)
 
-# When a client emits the event 'chat' to the server, this function is run
-# 'chat' is a custom event name that we just decided
+# When a client emits the event 'board' to the server, this function is run
+# 'board' is a custom event name that we just decided
 @socketio.on('board')
-def on_board(data): # data is whatever arg you pass in your emit call on client
+def on_board(data):
     print(data)
-    # This emits the 'chat' event from the server to all clients except for
-    # the client that emmitted the event that triggered this function
     socketio.emit('board',  data, broadcast=True, include_self=False)
-    
+
+# When a client emits the event 'reset_game' to the server, this function is run
+# 'reset_game' is a custom event name that we just decided    
 @socketio.on('reset_game')
-def on_reset_game(data): # data is whatever arg you pass in your emit call on client
+def on_reset_game(data):
     print(data)
-    # This emits the 'chat' event from the server to all clients except for
-    # the client that emmitted the event that triggered this function
+    #clear array when we receie the reset game event from the client.
+    users.clear();
     socketio.emit('reset_game',  data, broadcast=True, include_self=False)
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
