@@ -59,8 +59,6 @@ function Handler () {
     inputRef.current.value = "";
   }
   
-  //console.log(userList);
-  
   // The function inside useEffect is only run whenever any variable in the array
   // (passed as the second arg to useEffect) changes. Since this array is empty
   // here, then the function will only run once at the very beginning of mounting.
@@ -82,15 +80,13 @@ function Handler () {
         setSpectatorList(prevUserList => [...prevUserList, lastuser]);
       }
       
-      console.log("userlist from useEffect",userList);
-      
     });
   }, []);
   
   //console.log("userList after useeffect", userList);
   //console.log("spectator list after use effect", spectatorList);
   
-  //not using this function now
+  //Show/hide Leaderboard
   function onShowHide() {
     setShown((prevShown) => {
       return !prevShown;
@@ -183,8 +179,15 @@ function Handler () {
           <div style={styles}>
           <ParticlesBg type="circle" bg={true} />
           <h1>Play Tic Tac Toe, Enjoy!</h1>
-          <input ref={inputRef} type="text" />
-          <button onClick={() => onClickAddtoList()}>Log in</button>
+          <div>
+            <button onClick={() => onShowHide()}>Show/Hide Leaderboard</button>
+          </div>
+          {isShown === false ? (
+          <div>
+            <input ref={inputRef} type="text" />
+            <button onClick={() => onClickAddtoList()}>Log in</button>
+          </div>
+          ) : ("")}
           {isShown === true ? (
             <div>
               <Board squares={board} onClick={clickHandler} />
