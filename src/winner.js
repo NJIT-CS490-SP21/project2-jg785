@@ -1,5 +1,7 @@
 import React from 'react';
 
+//Function from reactjs.org
+
 function calculateWinner(squares) {
 	const lines = [
 		[0, 1, 2],

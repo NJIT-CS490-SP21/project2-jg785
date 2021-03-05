@@ -27,4 +27,6 @@ March 1, 2021.
 1. Had a lot of problems with the socket connection. - Did research and watched youtube videos.
 2. Logic for the board and player x and o. - Looked up methods online.
 3. Spectator login not showing when they log in. - Added spectator after they log in.
+4. User list would not reset after clicking play again. - use the method array.clear() in the socket
+   for the reset game event.
 

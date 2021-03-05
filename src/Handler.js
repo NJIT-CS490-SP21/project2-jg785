@@ -4,6 +4,7 @@ import Board from './Board';
 import calculateWinner from './winner';
 import io from 'socket.io-client';
 import ParticlesBg from 'particles-bg';
+//import leaderboard from './Leaderboard';
 
 const socket = io(); // Connects to socket connection io()
 
@@ -30,6 +31,30 @@ function Handler () {
   const [spectatorList, setSpectatorList] = useState([]);
   const playerX = userList[0];
   const playerO = userList[1];
+  
+  //table shown
+  const [tableShown, settableShown] = useState(false);
+  
+  //winner and loser state
+  //const [winnerUser, setwinUser] = useState();
+  //const [loserUser, setlosUser] = useState();
+  
+  //if(winner === "X"){
+    //setwinUser((prevcurrUser)=>playerX);
+  //}
+  //else{
+    //setlosUser((prevcurrUser)=>playerO);
+  //}
+  //if(winner === "O"){
+    //setwinUser((prevcurrUser)=>playerO);
+  //}
+  //else{
+    //setlosUser((prevcurrUser)=>playerX);
+  //}
+  
+  //console.log("Winner username", winnerUser);
+  //console.log("Loser username", loserUser);
+  //leaderboard state
   
   function onClickAddtoList() {
     const username = inputRef.current.value;
@@ -87,8 +112,8 @@ function Handler () {
   //console.log("spectator list after use effect", spectatorList);
   
   //Show/hide Leaderboard
-  function onShowHide() {
-    setShown((prevShown) => {
+  function onShowHideLeaderBoard() {
+    settableShown((prevShown) => {
       return !prevShown;
     });
   }
@@ -127,6 +152,29 @@ function Handler () {
     });
   }, []);
   
+  //Leaderboard
+  function leaderboard(){
+    return (
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">Tic Tac Toe Leaderboard</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Username</td>
+                        <td>Ranking score</td>
+                    </tr>
+                    <tr>
+                      <td>Jhon</td>
+                      <td> 25 </td>
+                  </tr>
+                </tbody>
+            </table>
+    );
+  }
+  
   //Restart the Game
   function renderMoves () {
       return( <button onClick={() => {
@@ -135,6 +183,7 @@ function Handler () {
                         setUserList(Array().fill(null));
                         setSpectatorList([]);
                         setShown(false);
+                        settableShown(false);
                         
                         socket.emit('reset_game', Array(9).fill(null));
                         
@@ -153,6 +202,7 @@ function Handler () {
       setUserList(Array().fill(null));
       setSpectatorList(Array().fill(null));
       setShown(false);
+      settableShown(false);
       
     });
   }, []);
@@ -176,11 +226,14 @@ function Handler () {
   
   return (
           
-          <div style={styles}>
+          <div>
           <ParticlesBg type="circle" bg={true} />
           <h1>Play Tic Tac Toe, Enjoy!</h1>
           <div>
-            <button onClick={() => onShowHide()}>Show/Hide Leaderboard</button>
+            <button onClick={() => onShowHideLeaderBoard()}>Show/Hide Leaderboard</button>
+            {tableShown === true ? (
+              leaderboard()
+            ): ("")}
           </div>
           {isShown === false ? (
           <div>
