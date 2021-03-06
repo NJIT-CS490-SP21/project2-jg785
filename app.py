@@ -1,29 +1,26 @@
 import os
-from flask import Flask, send_from_directory, json, session
+from flask import Flask, send_from_directory, json
 from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv, find_dotenv
 
-load_dotenv(find_dotenv())
+load_dotenv(find_dotenv()) # This is to load your env variables from .env
 
 app = Flask(__name__, static_folder='./build/static')
-
 # Point SQLAlchemy to your Heroku database
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 # Gets rid of a warning
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-#creates var to access database
 db = SQLAlchemy(app)
-
 # IMPORTANT: This must be AFTER creating db variable to prevent
 # circular import issues
-from models import Person
+import models
 
 #Global array for users
-global users;
-users = [];
+global boardUsers;
+boardUsers = [];
 
 #Flask socket IO documentation
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -58,9 +55,9 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
     # This emits the 'login' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
     #append username to array
-    users.append(data["username"]);
+    boardUsers.append(data["username"]);
     print(data["username"]);
-    socketio.emit('login',  users, broadcast=True, include_self=False)
+    socketio.emit('login',  boardUsers, broadcast=True, include_self=False)
 
 # When a client emits the event 'board' to the server, this function is run
 # 'board' is a custom event name that we just decided
@@ -75,13 +72,13 @@ def on_board(data):
 def on_reset_game(data):
     print(data)
     #clear array when we receie the reset game event from the client.
-    users.clear();
+    boardUsers.clear();
     socketio.emit('reset_game',  data, broadcast=True, include_self=False)
     
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":
-
-# Note that we don't call app.run anymore. We call socketio.run with app arg
+    db.create_all()
+    
 # Note that we don't call app.run anymore. We call socketio.run with app arg
     socketio.run(
         app,
