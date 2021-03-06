@@ -35,6 +35,10 @@ function Handler () {
   //table shown
   const [tableShown, settableShown] = useState(false);
   
+  //Leaderboard state
+  const [userLeaderboard, setuserLeaderboard] = useState([]);
+  const [rankLeaderboard, setrankLeaderb] = useState([]);
+  
   //winner and loser state
   //const [winnerUser, setwinUser] = useState();
   //const [loserUser, setlosUser] = useState();
@@ -226,7 +230,7 @@ function Handler () {
   
   return (
           
-          <div>
+          <div style={styles}>
           <ParticlesBg type="circle" bg={true} />
           <h1>Play Tic Tac Toe, Enjoy!</h1>
           <div>
