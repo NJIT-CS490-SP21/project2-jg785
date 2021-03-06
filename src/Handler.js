@@ -37,7 +37,7 @@ function Handler () {
   
   //Leaderboard state
   const [userLeaderboard, setuserLeaderboard] = useState([]);
-  const [rankLeaderboard, setrankLeaderb] = useState([]);
+  const [scoreLeaderboard, setscoreLeaderboard] = useState([]);
   
   //winner and loser state
   //const [winnerUser, setwinUser] = useState();
@@ -94,18 +94,18 @@ function Handler () {
   useEffect(() => {
     // Listening for a chat event emitted by the server. If received, we
     // run the code in the function that is passed in as the second arg
-    socket.on('login', (users) => {
-      console.log('User list received!');
-      console.log("users: ", users);
+    socket.on('login', (boardUsers) => {
+      console.log('boardUser list received!');
+      console.log("boardusers: ", boardUsers);
       // If the server sends a message (on behalf of another client), then we
       // add it to the list of messages to render it on the UI.
-      const lastuser = users[users.length-1];
+      const lastuser = boardUsers[boardUsers.length-1];
       //setcurrUser((prevcurrUser)=>lastuser);
       //console.log("currUser from useeffect: ", lastuser,currUser);
       setUserList(prevUserList => [...prevUserList, lastuser]);
-      //const ls = [...users];
+      //const ls = [...boardUsers];
       
-      if(users.length > 2){
+      if(boardUsers.length > 2){
         setSpectatorList(prevUserList => [...prevUserList, lastuser]);
       }
       

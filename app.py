@@ -41,6 +41,12 @@ def index(filename):
 @socketio.on('connect')
 def on_connect():
     print('User connected!')
+    all_people = models.Person.query.all()
+    #List of users in DB
+    users = []
+    for person in all_people:
+        users.append(person.username)
+    print(users)
 
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
@@ -52,12 +58,32 @@ def on_disconnect():
 @socketio.on('login')
 def on_login(data): # data is whatever arg you pass in your emit call on client
     print(str(data))
-    # This emits the 'login' event from the server to all clients except for
-    # the client that emmitted the event that triggered this function
-    #append username to array
-    boardUsers.append(data["username"]);
-    print(data["username"]);
-    socketio.emit('login',  boardUsers, broadcast=True, include_self=False)
+    
+    all_people = models.Person.query.all()
+    #List of users in DB
+    users = []
+    for person in all_people:
+        users.append(person.username)
+    print(users)
+    
+    #if username is in database don't add it again.    
+    if(data["username"] in users):
+        
+        boardUsers.append(data["username"]);
+        print(data["username"]);
+        socketio.emit('login',  boardUsers, broadcast=True, include_self=False)
+    
+    else:
+        #new user of person class, add new user and commit to add to DB.
+        new_user = models.Person(username=data["username"], score=100)
+        db.session.add(new_user)
+        db.session.commit()
+        all_people = models.Person.query.all()
+        print(all_people)
+        
+        boardUsers.append(data["username"]);
+        print(data["username"]);
+        socketio.emit('login',  boardUsers, broadcast=True, include_self=False)
 
 # When a client emits the event 'board' to the server, this function is run
 # 'board' is a custom event name that we just decided
