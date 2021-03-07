@@ -72,9 +72,6 @@ function Handler () {
     inputRef.current.value = "";
   }
   
-  //console.log("userList after useeffect", userList);
-  //console.log("spectator list after use effect", spectatorList);
-  
   //Show/hide Leaderboard
   function onShowHideLeaderBoard() {
     settableShown((prevShown) => {
@@ -88,18 +85,6 @@ function Handler () {
   	// If user click an occupied square or if game is won, return
   	if (winner || boardCopy[i]) return;
   	// Put an X or an O in the clicked square
-  	
-  	if(winner == "X"){
-      socket.emit('setwinlosedraw', { winner: playerX, loser: playerO});
-    }
-    
-    else if(winner == "O"){
-      socket.emit('setwinlosedraw', { winner: playerO, loser: playerX});
-    }
-    
-    else if( (winner != "X" || winner != "O") && board_is_full){
-      socket.emit('setwinlosedraw', {winner: null, drawX: playerX, drawO: playerO });
-    }
   	
   	//Only allow first and second user to play. Other players that login,
   	//are spectators.
@@ -198,15 +183,8 @@ function Handler () {
       console.log("dbUsers: ", data["dbUsers"]);
       console.log("dbScores: ", data["dbScores"]);
       
-      //boardUsers = data["boardUsers"];
-      //dbUsers = data["dbUsers"];
-      //dbScores = data["dbScores"];
-      
       const lastuser = data["boardUsers"][data["boardUsers"].length-1];
-      //setcurrUser((prevcurrUser)=>lastuser);
-      //console.log("currUser from useeffect: ", lastuser,currUser);
       setUserList(prevUserList => [...prevUserList, lastuser]);
-      //const ls = [...boardUsers];
       
       if(data["boardUsers"].length > 2){
         setSpectatorList(prevUserList => [...prevUserList, lastuser]);
@@ -215,9 +193,6 @@ function Handler () {
       //Update state vars with database data.
       setusersLeaderboard(data["dbUsers"]);
       setscoresLeaderboard(data["dbScores"]);
-      
-      //setusersLeaderboard((prevBoard) => [...data["dbUsers"]);
-      //setscoresLeaderboard((prevBoard) => [...data["dbScores"]);
       
     });
     
@@ -251,19 +226,6 @@ function Handler () {
     });
     
   }, []);
-  
-  //Place in line 156 is want show/hide button
-  //<div>
-  //    <button onClick={() => onShowHide()}>Show/Hide list button</button>
-  //</div>
-  
-  //To show user list place inside isShow === true
-  
-  //<div>
-  //  {userList.map((item, index) => (
-  //    <li>{item}</li>
-  //  ))}
-  //</div>
   
   //Check if board is full
   const board_is_full = board.every(element => element !== null);

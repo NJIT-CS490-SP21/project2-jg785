@@ -46,12 +46,12 @@ def on_connect():
     users = []
     for person in all_people:
         users.append(person.username)
-    print(users)
+    #print(users)
     
     scores = []
     for person in all_people:
         scores.append(person.score)
-    print(scores)
+    #print(scores)
     
     socketio.emit('first_list', {'dbusers': users, 'dbscores': scores})
 
@@ -71,7 +71,7 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
     users = []
     for person in all_people:
         users.append(person.username)
-    print(users)
+    #print(users)
     
     #if username is in database don't add it again.    
     if(data["username"] in users):
@@ -86,17 +86,17 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         db.session.add(new_user)
         db.session.commit()
         all_people = models.Person.query.all()
-        print(all_people)
+        #print(all_people)
         
         users = []
         for person in all_people:
             users.append(person.username)
-        print(users)
+        #print(users)
         
         scores = []
         for person in all_people:
             scores.append(person.score)
-        print(scores)
+        #print(scores)
         
         boardUsers.append(data["username"]);
         print(data["username"]);
@@ -111,13 +111,7 @@ def on_board(data):
     
 @socketio.on('setwinlosedraw')
 def on_setwinlosedraw(data):
-    print(data)
-    
-    all_people = models.Person.query.all()
-    scores = []
-    for person in all_people:
-        scores.append(person.score)
-    print("In setwinlosedraw", data)
+    print("Game ended, received winlosedrainfo: ",data)
        
     if(data["winner"] != None):
        
@@ -128,6 +122,11 @@ def on_setwinlosedraw(data):
        loser = db.session.query(models.Person).filter_by(username=data['loser']).first()
        loser.score = loser.score - 1
        db.session.commit()
+       
+       all_people = models.Person.query.all()
+       scores = []
+       for person in all_people:
+            scores.append(person.score)
        print(scores)
        
        socketio.emit('new_scores', scores, broadcast=True, include_self=False)
@@ -141,7 +140,12 @@ def on_setwinlosedraw(data):
        drawO.score = drawO.score + 0
        db.session.commit()
         
+       all_people = models.Person.query.all()
+       scores = []
+       for person in all_people:
+            scores.append(person.score)
        print(scores)
+       
        socketio.emit('new_scores', scores, broadcast=True, include_self=False)
     
 
