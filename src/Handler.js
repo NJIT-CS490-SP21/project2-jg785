@@ -72,55 +72,8 @@ function Handler () {
     inputRef.current.value = "";
   }
   
-  // The function inside useEffect is only run whenever any variable in the array
-  // (passed as the second arg to useEffect) changes. Since this array is empty
-  // here, then the function will only run once at the very beginning of mounting.
-  useEffect(() => {
-    // Listening for a chat event emitted by the server. If received, we
-    // run the code in the function that is passed in as the second arg
-    socket.on('login', (data) => {
-      console.log('boardUser list received!');
-      console.log("boardusers: ", data["boardUsers"]);
-      console.log("dbUsers: ", data["dbUsers"]);
-      console.log("dbScores: ", data["dbScores"]);
-      
-      //boardUsers = data["boardUsers"];
-      //dbUsers = data["dbUsers"];
-      //dbScores = data["dbScores"];
-      
-      const lastuser = data["boardUsers"][data["boardUsers"].length-1];
-      //setcurrUser((prevcurrUser)=>lastuser);
-      //console.log("currUser from useeffect: ", lastuser,currUser);
-      setUserList(prevUserList => [...prevUserList, lastuser]);
-      //const ls = [...boardUsers];
-      
-      if(data["boardUsers"].length > 2){
-        setSpectatorList(prevUserList => [...prevUserList, lastuser]);
-      }
-      
-      //Update state vars with database data.
-      setusersLeaderboard(data["dbUsers"]);
-      setscoresLeaderboard(data["dbScores"]);
-      
-      //setusersLeaderboard((prevBoard) => [...data["dbUsers"]);
-      //setscoresLeaderboard((prevBoard) => [...data["dbScores"]);
-      
-    });
-  }, []);
-  
   //console.log("userList after useeffect", userList);
   //console.log("spectator list after use effect", spectatorList);
-  
-  useEffect(() => {
-    socket.on('first_list', (data) => {
-      console.log('First DB event received!');
-      console.log("Scores :", data);
-      
-      setusersLeaderboard(data["dbusers"]);
-      setscoresLeaderboard(data["dbscores"]);
-      
-    });
-  }, []);
   
   //Show/hide Leaderboard
   function onShowHideLeaderBoard() {
@@ -164,18 +117,6 @@ function Handler () {
   	}
   }
   
-  useEffect(() => {
-    socket.on('board', (data) => {
-      console.log('Board event received!');
-      console.log(data);
-      
-      set_x_next(!data.isXNext);
-      set_board((prevBoard) => [...data.squares]);
-      
-    });
-  }, []);
-  
-  
   function setWinnerLoserDraw(){
     
     if(winner == "X"){
@@ -190,17 +131,6 @@ function Handler () {
       socket.emit('setwinlosedraw', {winner: null, drawX: playerX, drawO: playerO });
     }
   }
-  
-  useEffect(() => {
-    socket.on('new_scores', (scores) => {
-      console.log('New Scores event received!');
-      console.log("Scores use:", scores);
-      
-      setscoresLeaderboard(scores);
-      
-    });
-  }, []);
-  
   
   //Leaderboard
   function leaderboard(){
@@ -254,6 +184,60 @@ function Handler () {
   }
   
   useEffect(() => {
+    socket.on('first_list', (data) => {
+      console.log('First DB event received!');
+      console.log("Scores :", data);
+      
+      setusersLeaderboard(data["dbusers"]);
+      setscoresLeaderboard(data["dbscores"]);
+    });
+    
+    socket.on('login', (data) => {
+      console.log('boardUser list received!');
+      console.log("boardusers: ", data["boardUsers"]);
+      console.log("dbUsers: ", data["dbUsers"]);
+      console.log("dbScores: ", data["dbScores"]);
+      
+      //boardUsers = data["boardUsers"];
+      //dbUsers = data["dbUsers"];
+      //dbScores = data["dbScores"];
+      
+      const lastuser = data["boardUsers"][data["boardUsers"].length-1];
+      //setcurrUser((prevcurrUser)=>lastuser);
+      //console.log("currUser from useeffect: ", lastuser,currUser);
+      setUserList(prevUserList => [...prevUserList, lastuser]);
+      //const ls = [...boardUsers];
+      
+      if(data["boardUsers"].length > 2){
+        setSpectatorList(prevUserList => [...prevUserList, lastuser]);
+      }
+      
+      //Update state vars with database data.
+      setusersLeaderboard(data["dbUsers"]);
+      setscoresLeaderboard(data["dbScores"]);
+      
+      //setusersLeaderboard((prevBoard) => [...data["dbUsers"]);
+      //setscoresLeaderboard((prevBoard) => [...data["dbScores"]);
+      
+    });
+    
+    socket.on('board', (data) => {
+      console.log('Board event received!');
+      console.log(data);
+      
+      set_x_next(!data.isXNext);
+      set_board((prevBoard) => [...data.squares]);
+      
+    });
+    
+    socket.on('new_scores', (scores) => {
+      console.log('New Scores event received!');
+      console.log("Scores use:", scores);
+      
+      setscoresLeaderboard(scores);
+      
+    });
+    
     socket.on('reset_game', (data) => {
       console.log("data", data);
       
@@ -265,6 +249,7 @@ function Handler () {
       settableShown(false);
       
     });
+    
   }, []);
   
   //Place in line 156 is want show/hide button

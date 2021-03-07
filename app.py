@@ -73,11 +73,6 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         users.append(person.username)
     print(users)
     
-    scores = []
-    for person in all_people:
-        scores.append(person.score)
-    print(scores)
-    
     #if username is in database don't add it again.    
     if(data["username"] in users):
         
@@ -92,6 +87,16 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         db.session.commit()
         all_people = models.Person.query.all()
         print(all_people)
+        
+        users = []
+        for person in all_people:
+            users.append(person.username)
+        print(users)
+        
+        scores = []
+        for person in all_people:
+            scores.append(person.score)
+        print(scores)
         
         boardUsers.append(data["username"]);
         print(data["username"]);
