@@ -39,27 +39,6 @@ function Handler () {
   const [usersLeaderboard, setusersLeaderboard] = useState([]);
   const [scoresLeaderboard, setscoresLeaderboard] = useState([]);
   
-  //winner and loser state
-  //const [winnerUser, setwinUser] = useState();
-  //const [loserUser, setlosUser] = useState();
-  
-  //if(winner === "X"){
-    //setwinUser((prevcurrUser)=>playerX);
-  //}
-  //else{
-    //setlosUser((prevcurrUser)=>playerO);
-  //}
-  //if(winner === "O"){
-    //setwinUser((prevcurrUser)=>playerO);
-  //}
-  //else{
-    //setlosUser((prevcurrUser)=>playerX);
-  //}
-  
-  //console.log("Winner username", winnerUser);
-  //console.log("Loser username", loserUser);
-  //leaderboard state
-  
   function onClickAddtoList() {
     const username = inputRef.current.value;
     if(username == ""){
@@ -80,6 +59,11 @@ function Handler () {
     
     if(userList.length >= 2){
       setSpectatorList(prevUserList => [...prevUserList, username]);
+    }
+    
+    if(usersLeaderboard.includes(username) == false){
+      setusersLeaderboard(prevList => [...prevList, username]);
+      setscoresLeaderboard(prevList => [...prevList, 100]);
     }
     
     socket.emit('login', { username: username });
@@ -118,11 +102,25 @@ function Handler () {
       setusersLeaderboard(data["dbUsers"]);
       setscoresLeaderboard(data["dbScores"]);
       
+      //setusersLeaderboard((prevBoard) => [...data["dbUsers"]);
+      //setscoresLeaderboard((prevBoard) => [...data["dbScores"]);
+      
     });
   }, []);
   
   //console.log("userList after useeffect", userList);
   //console.log("spectator list after use effect", spectatorList);
+  
+  useEffect(() => {
+    socket.on('first_list', (data) => {
+      console.log('First DB event received!');
+      console.log("Scores :", data);
+      
+      setusersLeaderboard(data["dbusers"]);
+      setscoresLeaderboard(data["dbscores"]);
+      
+    });
+  }, []);
   
   //Show/hide Leaderboard
   function onShowHideLeaderBoard() {
@@ -137,6 +135,18 @@ function Handler () {
   	// If user click an occupied square or if game is won, return
   	if (winner || boardCopy[i]) return;
   	// Put an X or an O in the clicked square
+  	
+  	if(winner == "X"){
+      socket.emit('setwinlosedraw', { winner: playerX, loser: playerO});
+    }
+    
+    else if(winner == "O"){
+      socket.emit('setwinlosedraw', { winner: playerO, loser: playerX});
+    }
+    
+    else if( (winner != "X" || winner != "O") && board_is_full){
+      socket.emit('setwinlosedraw', {winner: null, drawX: playerX, drawO: playerO });
+    }
   	
   	//Only allow first and second user to play. Other players that login,
   	//are spectators.
@@ -164,6 +174,33 @@ function Handler () {
       
     });
   }, []);
+  
+  
+  function setWinnerLoserDraw(){
+    
+    if(winner == "X"){
+      socket.emit('setwinlosedraw', { winner: playerX, loser: playerO});
+    }
+    
+    else if(winner == "O"){
+      socket.emit('setwinlosedraw', { winner: playerO, loser: playerX});
+    }
+    
+    else if( (winner != "X" || winner != "O") && board_is_full){
+      socket.emit('setwinlosedraw', {winner: null, drawX: playerX, drawO: playerO });
+    }
+  }
+  
+  useEffect(() => {
+    socket.on('new_scores', (scores) => {
+      console.log('New Scores event received!');
+      console.log("Scores use:", scores);
+      
+      setscoresLeaderboard(scores);
+      
+    });
+  }, []);
+  
   
   //Leaderboard
   function leaderboard(){

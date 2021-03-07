@@ -52,6 +52,8 @@ def on_connect():
     for person in all_people:
         scores.append(person.score)
     print(scores)
+    
+    socketio.emit('first_list', {'dbusers': users, 'dbscores': scores})
 
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
@@ -101,6 +103,42 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
 def on_board(data):
     print(data)
     socketio.emit('board',  data, broadcast=True, include_self=False)
+    
+@socketio.on('setwinlosedraw')
+def on_setwinlosedraw(data):
+    print(data)
+    
+    all_people = models.Person.query.all()
+    scores = []
+    for person in all_people:
+        scores.append(person.score)
+    print("In setwinlosedraw", data)
+       
+    if(data["winner"] != None):
+       
+       winner = db.session.query(models.Person).filter_by(username=data['winner']).first()
+       winner.score = winner.score + 1
+       db.session.commit()
+       
+       loser = db.session.query(models.Person).filter_by(username=data['loser']).first()
+       loser.score = loser.score - 1
+       db.session.commit()
+       print(scores)
+       
+       socketio.emit('new_scores', scores, broadcast=True, include_self=False)
+    
+    else:
+       drawX = db.session.query(models.Person).filter_by(username=data['drawX']).first()
+       drawX.score = drawX.score + 0
+       db.session.commit()
+       
+       drawO = db.session.query(models.Person).filter_by(username=data['drawO']).first()
+       drawO.score = drawO.score + 0
+       db.session.commit()
+        
+       print(scores)
+       socketio.emit('new_scores', scores, broadcast=True, include_self=False)
+    
 
 # When a client emits the event 'reset_game' to the server, this function is run
 # 'reset_game' is a custom event name that we just decided    
