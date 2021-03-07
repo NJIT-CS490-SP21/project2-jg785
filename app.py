@@ -47,6 +47,11 @@ def on_connect():
     for person in all_people:
         users.append(person.username)
     print(users)
+    
+    scores = []
+    for person in all_people:
+        scores.append(person.score)
+    print(scores)
 
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
@@ -66,6 +71,11 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         users.append(person.username)
     print(users)
     
+    scores = []
+    for person in all_people:
+        scores.append(person.score)
+    print(scores)
+    
     #if username is in database don't add it again.    
     if(data["username"] in users):
         
@@ -83,7 +93,7 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         
         boardUsers.append(data["username"]);
         print(data["username"]);
-        socketio.emit('login',  boardUsers, broadcast=True, include_self=False)
+        socketio.emit('login',  {'boardUsers': boardUsers, 'dbUsers': users, 'dbScores': scores}, broadcast=True, include_self=False)
 
 # When a client emits the event 'board' to the server, this function is run
 # 'board' is a custom event name that we just decided

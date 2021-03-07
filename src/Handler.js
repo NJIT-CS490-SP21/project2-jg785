@@ -36,8 +36,8 @@ function Handler () {
   const [tableShown, settableShown] = useState(false);
   
   //Leaderboard state
-  const [userLeaderboard, setuserLeaderboard] = useState([]);
-  const [scoreLeaderboard, setscoreLeaderboard] = useState([]);
+  const [usersLeaderboard, setusersLeaderboard] = useState([]);
+  const [scoresLeaderboard, setscoresLeaderboard] = useState([]);
   
   //winner and loser state
   //const [winnerUser, setwinUser] = useState();
@@ -94,20 +94,29 @@ function Handler () {
   useEffect(() => {
     // Listening for a chat event emitted by the server. If received, we
     // run the code in the function that is passed in as the second arg
-    socket.on('login', (boardUsers) => {
+    socket.on('login', (data) => {
       console.log('boardUser list received!');
-      console.log("boardusers: ", boardUsers);
-      // If the server sends a message (on behalf of another client), then we
-      // add it to the list of messages to render it on the UI.
-      const lastuser = boardUsers[boardUsers.length-1];
+      console.log("boardusers: ", data["boardUsers"]);
+      console.log("dbUsers: ", data["dbUsers"]);
+      console.log("dbScores: ", data["dbScores"]);
+      
+      //boardUsers = data["boardUsers"];
+      //dbUsers = data["dbUsers"];
+      //dbScores = data["dbScores"];
+      
+      const lastuser = data["boardUsers"][data["boardUsers"].length-1];
       //setcurrUser((prevcurrUser)=>lastuser);
       //console.log("currUser from useeffect: ", lastuser,currUser);
       setUserList(prevUserList => [...prevUserList, lastuser]);
       //const ls = [...boardUsers];
       
-      if(boardUsers.length > 2){
+      if(data["boardUsers"].length > 2){
         setSpectatorList(prevUserList => [...prevUserList, lastuser]);
       }
+      
+      //Update state vars with database data.
+      setusersLeaderboard(data["dbUsers"]);
+      setscoresLeaderboard(data["dbScores"]);
       
     });
   }, []);
@@ -158,11 +167,22 @@ function Handler () {
   
   //Leaderboard
   function leaderboard(){
+    
+    const table = usersLeaderboard.map((value, index) => {
+      const content = scoresLeaderboard[index];
+      return(
+        <tr>
+          <td>{value}</td>
+          <td>{content}</td>
+        </tr>
+      );
+    });
+    
     return (
             <table>
                 <thead>
                     <tr>
-                        <th colspan="2">Tic Tac Toe Leaderboard</th>
+                        <th colSpan="2">Tic Tac Toe Leaderboard</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -171,9 +191,8 @@ function Handler () {
                         <td>Ranking score</td>
                     </tr>
                     <tr>
-                      <td>Jhon</td>
-                      <td> 25 </td>
-                  </tr>
+                      {table}
+                    </tr>
                 </tbody>
             </table>
     );
