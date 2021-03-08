@@ -46,12 +46,12 @@ def on_connect():
     users = []
     for person in all_people:
         users.append(person.username)
-    #print(users)
+    print(users)
     
     scores = []
     for person in all_people:
         scores.append(person.score)
-    #print(scores)
+    print(scores)
     
     socketio.emit('first_list', {'dbusers': users, 'dbscores': scores})
 
@@ -71,7 +71,7 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
     users = []
     for person in all_people:
         users.append(person.username)
-    #print(users)
+    print(users)
     
     #if username is in database don't add it again.    
     if(data["username"] in users):
@@ -91,12 +91,12 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         users = []
         for person in all_people:
             users.append(person.username)
-        #print(users)
+        print(users)
         
         scores = []
         for person in all_people:
             scores.append(person.score)
-        #print(scores)
+        print(scores)
         
         boardUsers.append(data["username"]);
         print(data["username"]);
@@ -113,41 +113,29 @@ def on_board(data):
 def on_setwinlosedraw(data):
     print("Game ended, received winlosedrainfo: ",data)
        
-    if(data["winner"] != None):
-       
-       winner = db.session.query(models.Person).filter_by(username=data['winner']).first()
-       winner.score = winner.score + 1
-       db.session.commit()
-       
-       loser = db.session.query(models.Person).filter_by(username=data['loser']).first()
-       loser.score = loser.score - 1
-       db.session.commit()
-       
-       all_people = models.Person.query.all()
-       scores = []
-       for person in all_people:
-            scores.append(person.score)
-       print(scores)
-       
-       socketio.emit('new_scores', scores, broadcast=True, include_self=False)
+    winner = db.session.query(models.Person).filter_by(username=data['winner']).first()
+    winner.score = winner.score + 1
+    db.session.commit()
     
-    else:
-       drawX = db.session.query(models.Person).filter_by(username=data['drawX']).first()
-       drawX.score = drawX.score + 0
-       db.session.commit()
-       
-       drawO = db.session.query(models.Person).filter_by(username=data['drawO']).first()
-       drawO.score = drawO.score + 0
-       db.session.commit()
+    loser = db.session.query(models.Person).filter_by(username=data['loser']).first()
+    loser.score = loser.score - 1
+    db.session.commit()
+    
+    all_people = models.Person.query.all()
+    
+    users = []
+    for person in all_people:
+        users.append(person.username)
+    print(users)
         
-       all_people = models.Person.query.all()
-       scores = []
-       for person in all_people:
-            scores.append(person.score)
-       print(scores)
-       
-       socketio.emit('new_scores', scores, broadcast=True, include_self=False)
+    scores = []
+    for person in all_people:
+        scores.append(person.score)
+    print("updated scores",scores)
     
+    #include_self sends data to all clients if set to true will also
+    #send data to the client that data was first received from.
+    socketio.emit('new_scores', {'endGameUsers':users, 'endGameScores': scores}, broadcast=True, include_self=True)
 
 # When a client emits the event 'reset_game' to the server, this function is run
 # 'reset_game' is a custom event name that we just decided    
@@ -156,6 +144,7 @@ def on_reset_game(data):
     print(data)
     #clear array when we receie the reset game event from the client.
     boardUsers.clear();
+    #gameState = True;
     socketio.emit('reset_game',  data, broadcast=True, include_self=False)
     
 # Note we need to add this line so we can import app in the python shell

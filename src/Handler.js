@@ -17,20 +17,21 @@ const styles = {
 function Handler () {
   const [board, set_board] = useState(Array(9).fill(null));
   const [x_next, set_x_next] = useState(true);
-  const winner = calculateWinner(board);
   
   //login state
   const inputRef = useRef(null);
   const [userList, setUserList] = useState([]);
   const [isShown, setShown] = useState(false);
   
+  const playerX = userList[0];
+  const playerO = userList[1];
+  const winner = calculateWinner(board);
+  
   //current user state
   const [currUser, setcurrUser] = useState();
   
   //spectator state
   const [spectatorList, setSpectatorList] = useState([]);
-  const playerX = userList[0];
-  const playerO = userList[1];
   
   //table shown
   const [tableShown, settableShown] = useState(false);
@@ -38,6 +39,22 @@ function Handler () {
   //Leaderboard state
   const [usersLeaderboard, setusersLeaderboard] = useState([]);
   const [scoresLeaderboard, setscoresLeaderboard] = useState([]);
+  
+  
+  
+  React.useEffect(() => {
+    if(winner == "X" && currUser == playerX){
+      socket.emit('setwinlosedraw', { winner: playerX, loser: playerO});
+    }
+    
+    else if(winner == "O" && currUser == playerO){
+      socket.emit('setwinlosedraw', { winner: playerO, loser: playerX});
+    };
+    
+  }, [winner]);
+  
+  //Winner state
+  //const [winnerState, setwinnerState] = useState(false);
   
   function onClickAddtoList() {
     const username = inputRef.current.value;
@@ -102,20 +119,8 @@ function Handler () {
   	}
   }
   
-  function setWinnerLoserDraw(){
     
-    if(winner == "X"){
-      socket.emit('setwinlosedraw', { winner: playerX, loser: playerO});
-    }
     
-    else if(winner == "O"){
-      socket.emit('setwinlosedraw', { winner: playerO, loser: playerX});
-    }
-    
-    else if( (winner != "X" || winner != "O") && board_is_full){
-      socket.emit('setwinlosedraw', {winner: null, drawX: playerX, drawO: playerO });
-    }
-  }
   
   //Leaderboard
   function leaderboard(){
@@ -124,7 +129,9 @@ function Handler () {
       const content = scoresLeaderboard[index];
       return(
         <tr>
-          <td>{value}</td>
+          { ( (currUser === value) ) ? (
+            <td><p><font color="blue">{value}</font></p></td>
+          ) : ( <td>{value}</td>)}
           <td>{content}</td>
         </tr>
       );
@@ -152,6 +159,7 @@ function Handler () {
   
   //Restart the Game
   function renderMoves () {
+    //setWinnerLoserDraw();
       return( <button onClick={() => {
                         set_board(Array(9).fill(null));
                         set_x_next(true);
@@ -205,11 +213,13 @@ function Handler () {
       
     });
     
-    socket.on('new_scores', (scores) => {
+    socket.on('new_scores', (data) => {
       console.log('New Scores event received!');
-      console.log("Scores use:", scores);
+      console.log('endGameUsers', data["endGameUsers"]);
+      console.log("endGameScores:", data["endGameScores"]);
       
-      setscoresLeaderboard(scores);
+      setusersLeaderboard(data["endGameUsers"]);
+      setscoresLeaderboard(data["endGameScores"]);
       
     });
     
