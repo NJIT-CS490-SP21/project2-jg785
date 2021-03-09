@@ -41,17 +41,18 @@ def index(filename):
 @socketio.on('connect')
 def on_connect():
     print('User connected!')
-    all_people = models.Person.query.all()
-    #List of users in DB
-    users = []
-    for person in all_people:
-        users.append(person.username)
-    print(users)
     
+    orderedUsers = db.session.query(models.Person).order_by(models.Person.score.desc()).all()
+    db.session.commit()
+    
+    users = []
     scores = []
-    for person in all_people:
+    for person in orderedUsers:
+        users.append(person.username)
         scores.append(person.score)
-    print(scores)
+    
+    print("newUsers", users)
+    print("newScores", scores)
     
     socketio.emit('first_list', {'dbusers': users, 'dbscores': scores})
 
@@ -66,12 +67,13 @@ def on_disconnect():
 def on_login(data): # data is whatever arg you pass in your emit call on client
     print(str(data))
     
-    all_people = models.Person.query.all()
-    #List of users in DB
+    orderedUsers = db.session.query(models.Person).order_by(models.Person.score.desc()).all()
+    db.session.commit()
+    
     users = []
-    for person in all_people:
+    for person in orderedUsers:
         users.append(person.username)
-    print(users)
+    print("newUsers", users)
     
     #if username is in database don't add it again.    
     if(data["username"] in users):
@@ -85,18 +87,20 @@ def on_login(data): # data is whatever arg you pass in your emit call on client
         new_user = models.Person(username=data["username"], score=100)
         db.session.add(new_user)
         db.session.commit()
-        all_people = models.Person.query.all()
+        #all_people = models.Person.query.all()
         #print(all_people)
         
-        users = []
-        for person in all_people:
-            users.append(person.username)
-        print(users)
+        orderedUsers = db.session.query(models.Person).order_by(models.Person.score.desc()).all()
+        db.session.commit()
         
+        users = []
         scores = []
-        for person in all_people:
+        for person in orderedUsers:
+            users.append(person.username)
             scores.append(person.score)
-        print(scores)
+        
+        print("newUsers", users)
+        print("newScores", scores)
         
         boardUsers.append(data["username"]);
         print(data["username"]);
@@ -121,17 +125,17 @@ def on_setwinlosedraw(data):
     loser.score = loser.score - 1
     db.session.commit()
     
-    all_people = models.Person.query.all()
+    orderedUsers = db.session.query(models.Person).order_by(models.Person.score.desc()).all()
+    db.session.commit()
     
     users = []
-    for person in all_people:
-        users.append(person.username)
-    print(users)
-        
     scores = []
-    for person in all_people:
+    for person in orderedUsers:
+        users.append(person.username)
         scores.append(person.score)
-    print("updated scores",scores)
+        
+    print("newUsers", users)
+    print("newScores", scores)
     
     #include_self sends data to all clients if set to true will also
     #send data to the client that data was first received from.

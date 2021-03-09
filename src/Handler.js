@@ -40,8 +40,6 @@ function Handler () {
   const [usersLeaderboard, setusersLeaderboard] = useState([]);
   const [scoresLeaderboard, setscoresLeaderboard] = useState([]);
   
-  
-  
   React.useEffect(() => {
     if(winner == "X" && currUser == playerX){
       socket.emit('setwinlosedraw', { winner: playerX, loser: playerO});
@@ -49,12 +47,9 @@ function Handler () {
     
     else if(winner == "O" && currUser == playerO){
       socket.emit('setwinlosedraw', { winner: playerO, loser: playerX});
-    };
+    }
     
   }, [winner]);
-  
-  //Winner state
-  //const [winnerState, setwinnerState] = useState(false);
   
   function onClickAddtoList() {
     const username = inputRef.current.value;
@@ -119,9 +114,6 @@ function Handler () {
   	}
   }
   
-    
-    
-  
   //Leaderboard
   function leaderboard(){
     
@@ -164,6 +156,7 @@ function Handler () {
                         set_board(Array(9).fill(null));
                         set_x_next(true);
                         setUserList(Array().fill(null));
+                        setcurrUser((prevcurrUser)=>null);
                         setSpectatorList([]);
                         setShown(false);
                         settableShown(false);
@@ -191,7 +184,7 @@ function Handler () {
       console.log("dbUsers: ", data["dbUsers"]);
       console.log("dbScores: ", data["dbScores"]);
       
-      const lastuser = data["boardUsers"][data["boardUsers"].length-1];
+      var lastuser = data["boardUsers"][data["boardUsers"].length-1];
       setUserList(prevUserList => [...prevUserList, lastuser]);
       
       if(data["boardUsers"].length > 2){
@@ -229,6 +222,7 @@ function Handler () {
       set_board(prevBoard => data);
       set_x_next(true);
       setUserList(Array().fill(null));
+      setcurrUser((prevcurrUser)=>null);
       setSpectatorList(Array().fill(null));
       setShown(false);
       settableShown(false);
@@ -242,16 +236,18 @@ function Handler () {
   console.log(board_is_full);
   
   return (
-          
+          <div>
           <div style={styles}>
           <ParticlesBg type="circle" bg={true} />
           <h1>Play Tic Tac Toe, Enjoy!</h1>
-          <div>
+          </div>
+          <div align="right">
             <button onClick={() => onShowHideLeaderBoard()}>Show/Hide Leaderboard</button>
             {tableShown === true ? (
               leaderboard()
             ): ("")}
           </div>
+          <h2><div style={styles}>
           {isShown === false ? (
           <div>
             <input ref={inputRef} type="text" />
@@ -296,6 +292,7 @@ function Handler () {
           ) : (
             "No Users Yet"
           )}
+          </div></h2>
           </div>
   );
 }
