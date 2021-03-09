@@ -30,3 +30,16 @@ March 1, 2021.
 4. User list would not reset after clicking play again. - use the method array.clear() in the socket
    for the reset game event.
 
+## Database
+1. If you get a problem with the database. - In the terminal, run python to open up an interactive session.
+   Initialize a new database using SQLAlchemy functions. Then type in these Python lines one by one:
+    >> from app import db
+    >> import models
+    >> db.create_all()
+    >> db.session.commit()
+2. Now let's make sure this was written to our Heroku remote database! Let's connect to it using: heroku pg:psql
+    \d to list all our tables. person should be in there now.
+3. Now let's query the data with a SQL query
+    SELECT * FROM person;
+4. You should be able to see the table now.
+

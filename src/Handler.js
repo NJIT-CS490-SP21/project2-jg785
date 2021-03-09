@@ -4,6 +4,7 @@ import Board from './Board';
 import calculateWinner from './winner';
 import io from 'socket.io-client';
 import ParticlesBg from 'particles-bg';
+import './boardc.css';
 //import leaderboard from './Leaderboard';
 
 const socket = io(); // Connects to socket connection io()
@@ -139,7 +140,7 @@ function Handler () {
                 <tbody>
                     <tr>
                         <td>Username</td>
-                        <td>Ranking score</td>
+                        <td>Score</td>
                     </tr>
                     <tr>
                       {table}
@@ -237,21 +238,25 @@ function Handler () {
   
   return (
           <div>
-          <div style={styles}>
+          <div class="display">
           <ParticlesBg type="circle" bg={true} />
           <h1>Play Tic Tac Toe, Enjoy!</h1>
           </div>
-          <div align="right">
-            <button onClick={() => onShowHideLeaderBoard()}>Show/Hide Leaderboard</button>
-            {tableShown === true ? (
-              leaderboard()
-            ): ("")}
+          <div class="leaderboard">
+            <div class="buttonClass">
+              <button onClick={() => onShowHideLeaderBoard()}>Show/Hide Leaderboard</button>
+              {tableShown === true ? (
+                leaderboard()
+              ): ("")}
+            </div>
           </div>
-          <h2><div style={styles}>
+          <h2><div class="display">
           {isShown === false ? (
           <div>
             <input ref={inputRef} type="text" />
-            <button onClick={() => onClickAddtoList()}>Log in</button>
+            <div class="buttonClass">
+              <button onClick={() => onClickAddtoList()}>Log in</button>
+            </div>
           </div>
           ) : ("")}
           {isShown === true ? (
@@ -259,7 +264,7 @@ function Handler () {
               <Board squares={board} onClick={clickHandler} />
               <div>
                 <p>Player X: {playerX}</p>
-                <p>{playerO ? "Player O: " + playerO : "Player Y hasn't connected yet."}</p>
+                <p>{playerO ? "Player O: " + playerO : "Player O hasn't connected yet."}</p>
                 <p>{winner ? "Winner: " + winner : "Next Player: " + (x_next ? "X" : "O")}</p>
                 {spectatorList.length != 0 ? (
                 <div>
