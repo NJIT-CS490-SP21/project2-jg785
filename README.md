@@ -1,6 +1,6 @@
 # Flask and create-react-app
 
-Jhon Garcia - Project 2 Milestone - TicTacToe
+Jhon Garcia - Project 3 Milestone - TicTacToe
 
 March 1, 2021.
 
