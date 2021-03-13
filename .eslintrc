@@ -1,0 +1,17 @@
+{
+  "extends": ["airbnb", "airbnb/hooks"],
+  "rules": {
+    "react/no-array-index-key": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "react/jsx-filename-extension": "off",
+    //"react/destructuring-assignment": "off",
+    //"react/prop-types": "off",
+    //"consistent-return": "off",
+    //"brace-style": "off",
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module",
+    "allowImportExportEverywhere": true,
+  },
+}

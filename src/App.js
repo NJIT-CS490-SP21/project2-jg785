@@ -1,13 +1,9 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
-//import { ListItem } from './ListItem.js';
-//import { useState, useRef } from 'react';
-import Handler from './Handler.js';
+import Handler from './Handler';
 
-function App (){
-    return( 
-          <Handler />
-          );
-} 
+function App() {
+  return <Handler />;
+}
 
 export default App;

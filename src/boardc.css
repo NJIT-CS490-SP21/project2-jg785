@@ -1,17 +1,23 @@
 .board {
-	width: 300px; /* Total horizontal dimensions */
-	height: 300px; /* Total vertical dimensions */
-	display: grid; /* Enables CSS Grid */ 
-	grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
-  grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
+  width: 300px; /* Total horizontal dimensions */
+  height: 300px; /* Total vertical dimensions */
+  display: grid; /* Enables CSS Grid */
+  grid-template-columns: repeat(
+    3,
+    1fr
+  ); /* Total horizontal space broken into 3 columns */
+  grid-template-rows: repeat(
+    3,
+    1fr
+  ); /* Total vertical space broken into 3 rows */
 }
 
 .box {
   border: 1px solid black; /* Shows the lines in the CSS grid */
 }
 
-.xo{
-    font-size:75px;
+.xo {
+  font-size: 75px;
 }
 
 .display {
@@ -20,13 +26,13 @@
 
 table,
 td {
-    border: 1px solid #333;
+  border: 1px solid #333;
 }
 
 thead,
 tfoot {
-    background-color: #333;
-    color: #fff;
+  background-color: #333;
+  color: #fff;
 }
 
 button {
@@ -46,12 +52,14 @@ button {
   box-shadow: 0 10px #999;
 }
 
-button:hover {background-color: coral}
+button:hover {
+  background-color: coral;
+}
 
 button:active {
-background-color: coral;
-box-shadow: 0 5px #666;
-transform: translateY(4px);
+  background-color: coral;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
 }
 
 .leaderboard {
