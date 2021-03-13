@@ -172,14 +172,14 @@ function Handler() {
 
     socket.on('login', (data) => {
       // console.log('boardUser list received!');
-      // console.log('boardusers: ', data.boardUsers);
+      // console.log('BOARDUSERS: ', data.BOARDUSERS);
       // console.log('dbUsers: ', data.dbUsers);
       // console.log('dbScores: ', data.dbScores);
 
-      const lastuser = data.boardUsers[data.boardUsers.length - 1];
+      const lastuser = data.BOARDUSERS[data.BOARDUSERS.length - 1];
       setUserList((prevUserList) => [...prevUserList, lastuser]);
 
-      if (data.boardUsers.length > 2) {
+      if (data.BOARDUSERS.length > 2) {
         setSpectatorList((prevUserList) => [...prevUserList, lastuser]);
       }
 

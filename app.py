@@ -1,3 +1,6 @@
+'''
+APP.py is the server.
+'''
 import os
 from flask import Flask, send_from_directory, json
 from flask_socketio import SocketIO
@@ -7,48 +10,54 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())  # This is to load your env variables from .env
 
-app = Flask(__name__, static_folder='./build/static')
+APP = Flask(__name__, static_folder='./build/static')
 # Point SQLAlchemy to your Heroku database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+APP.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 # Gets rid of a warning
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+APP.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-# IMPORTANT: This must be AFTER creating db variable to prevent
+DB = SQLAlchemy(APP)
+# IMPORTANT: This must be AFTER creating DB variable to prevent
 # circular import issues
 import models
 
 #Global array for users
-global boardUsers
-boardUsers = []
+global BOARDUSERS
+BOARDUSERS = []
 
 #Flask socket IO documentation
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
+cors = CORS(APP, resources={r"/*": {"origins": "*"}})
 
-socketio = SocketIO(app,
+socketio = SocketIO(APP,
                     cors_allowed_origins="*",
                     json=json,
                     manage_session=False)
 
 
-@app.route('/', defaults={"filename": "index.html"})
-@app.route('/<path:filename>')
+@APP.route('/', defaults={"filename": "index.html"})
+@APP.route('/<path:filename>')
 def index(filename):
+    '''
+    Index function receives filename
+    '''
     return send_from_directory('./build', filename)
 
 
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
 def on_connect():
+    '''
+    Function for Connect socket
+    '''
     print('User connected!')
 
-    orderedUsers = db.session.query(models.Person).order_by(
+    ordered_users = DB.session.query(models.Person).order_by(
         models.Person.score.desc()).all()
-    db.session.commit()
+    DB.session.commit()
 
     users = []
     scores = []
-    for person in orderedUsers:
+    for person in ordered_users:
         users.append(person.username)
         scores.append(person.score)
 
@@ -61,6 +70,9 @@ def on_connect():
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
 def on_disconnect():
+    '''
+    Function for Disconnect socket
+    '''
     print('User disconnected!')
 
 
@@ -69,49 +81,52 @@ def on_disconnect():
 @socketio.on('login')
 def on_login(
         data):  # data is whatever arg you pass in your emit call on client
+    '''
+    Function for Login socket
+    '''
     print(str(data))
 
-    orderedUsers = db.session.query(models.Person).order_by(
+    ordered_users = DB.session.query(models.Person).order_by(
         models.Person.score.desc()).all()
-    db.session.commit()
+    DB.session.commit()
 
     users = []
-    for person in orderedUsers:
+    for person in ordered_users:
         users.append(person.username)
     print("newUsers", users)
 
     #if username is in database don't add it again.
     if (data["username"] in users):
 
-        boardUsers.append(data["username"])
+        BOARDUSERS.append(data["username"])
         print(data["username"])
-        socketio.emit('login', boardUsers, broadcast=True, include_self=False)
+        socketio.emit('login', BOARDUSERS, broadcast=True, include_self=False)
 
     else:
         #new user of person class, add new user and commit to add to DB.
         new_user = models.Person(username=data["username"], score=100)
-        db.session.add(new_user)
-        db.session.commit()
+        DB.session.add(new_user)
+        DB.session.commit()
         #all_people = models.Person.query.all()
         #print(all_people)
 
-        orderedUsers = db.session.query(models.Person).order_by(
+        ordered_users = DB.session.query(models.Person).order_by(
             models.Person.score.desc()).all()
-        db.session.commit()
+        DB.session.commit()
 
         users = []
         scores = []
-        for person in orderedUsers:
+        for person in ordered_users:
             users.append(person.username)
             scores.append(person.score)
 
         print("newUsers", users)
         print("newScores", scores)
 
-        boardUsers.append(data["username"])
+        BOARDUSERS.append(data["username"])
         print(data["username"])
         socketio.emit('login', {
-            'boardUsers': boardUsers,
+            'BOARDUSERS': BOARDUSERS,
             'dbUsers': users,
             'dbScores': scores
         },
@@ -123,31 +138,37 @@ def on_login(
 # 'board' is a custom event name that we just decided
 @socketio.on('board')
 def on_board(data):
+    '''
+    Function for Board socket
+    '''
     print(data)
     socketio.emit('board', data, broadcast=True, include_self=False)
 
 
 @socketio.on('setwinlosedraw')
 def on_setwinlosedraw(data):
+    '''
+    Function for Setwinlosedraw socket
+    '''
     print("Game ended, received winlosedrainfo: ", data)
 
-    winner = db.session.query(
+    winner = DB.session.query(
         models.Person).filter_by(username=data['winner']).first()
     winner.score = winner.score + 1
-    db.session.commit()
+    DB.session.commit()
 
-    loser = db.session.query(
+    loser = DB.session.query(
         models.Person).filter_by(username=data['loser']).first()
     loser.score = loser.score - 1
-    db.session.commit()
+    DB.session.commit()
 
-    orderedUsers = db.session.query(models.Person).order_by(
+    ordered_users = DB.session.query(models.Person).order_by(
         models.Person.score.desc()).all()
-    db.session.commit()
+    DB.session.commit()
 
     users = []
     scores = []
-    for person in orderedUsers:
+    for person in ordered_users:
         users.append(person.username)
         scores.append(person.score)
 
@@ -168,20 +189,23 @@ def on_setwinlosedraw(data):
 # 'reset_game' is a custom event name that we just decided
 @socketio.on('reset_game')
 def on_reset_game(data):
+    '''
+    Function for Reset game socket
+    '''
     print(data)
     #clear array when we receie the reset game event from the client.
-    boardUsers.clear()
+    BOARDUSERS.clear()
     #gameState = True;
     socketio.emit('reset_game', data, broadcast=True, include_self=False)
 
 
-# Note we need to add this line so we can import app in the python shell
+# Note we need to add this line so we can import APP in the python shell
 if __name__ == "__main__":
-    db.create_all()
+    DB.create_all()
 
-    # Note that we don't call app.run anymore. We call socketio.run with app arg
+    # Note that we don't call APP.run anymore. We call socketio.run with APP arg
     socketio.run(
-        app,
+        APP,
         host=os.getenv('IP', '0.0.0.0'),
         port=8081 if os.getenv('C9_PORT') else int(os.getenv('PORT', 8081)),
     )
