@@ -2,7 +2,7 @@
 
 Jhon Garcia - Project 3 Milestone - TicTacToe
 
-March 9, 2021.
+March 12, 2021.
 
 ## Requirements
 1. `npm install`
