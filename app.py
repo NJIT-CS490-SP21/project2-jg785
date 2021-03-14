@@ -103,9 +103,10 @@ def on_login(
 
     else:
         #new user of person class, add new user and commit to add to DB.
-        new_user = models.Person(username=data["username"], score=100)
-        DB.session.add(new_user)
-        DB.session.commit()
+        #new_user = models.Person(username=data["username"], score=100)
+        users = add_user(data["username"])
+        #DB.session.add(new_user)
+        #DB.session.commit()
         #all_people = models.Person.query.all()
         #print(all_people)
 
@@ -113,17 +114,17 @@ def on_login(
             models.Person.score.desc()).all()
         DB.session.commit()
 
-        users = []
+        #users = []
         scores = []
         for person in ordered_users:
-            users.append(person.username)
+            #users.append(person.username)
             scores.append(person.score)
 
-        print("newUsers", users)
-        print("newScores", scores)
+        #print("newUsers", users)
+        #print("newScores", scores)
 
         BOARDUSERS.append(data["username"])
-        print(data["username"])
+        #print(data["username"])
         socketio.emit('login', {
             'BOARDUSERS': BOARDUSERS,
             'dbUsers': users,
@@ -132,6 +133,26 @@ def on_login(
                       broadcast=True,
                       include_self=False)
 
+def add_user(username):
+    '''
+    This function will receieve a string username and will add
+    it to a list and return it.
+    '''
+    new_user = models.Person(username=username, score=100)
+    DB.session.add(new_user)
+    DB.session.commit()
+
+    #ordered_users = DB.session.query(models.Person).order_by(
+     #   models.Person.score.desc()).all()
+    #DB.session.commit()
+    
+    all_people = models.Person.query.all()
+
+    users = []
+    for person in all_people:
+        users.append(person.username)
+
+    return users
 
 # When a client emits the event 'board' to the server, this function is run
 # 'board' is a custom event name that we just decided
@@ -182,8 +203,8 @@ def on_setwinlosedraw(data):
     },
                   broadcast=True,
                   include_self=True)
-                  
-    
+
+
 def plusOne(score):
     '''
     Function receives an int and adds 1 to it, return.
@@ -203,7 +224,7 @@ def on_reset_game(data):
     clearArray(BOARDUSERS)
     #gameState = True;
     socketio.emit('reset_game', data, broadcast=True, include_self=False)
-    
+
 def clearArray(fullarr):
     '''
     Function receives an array and returns empty array.
