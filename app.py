@@ -66,7 +66,6 @@ def on_connect():
 
     socketio.emit('first_list', {'dbusers': users, 'dbscores': scores})
 
-
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
 def on_disconnect():
@@ -154,7 +153,7 @@ def on_setwinlosedraw(data):
 
     winner = DB.session.query(
         models.Person).filter_by(username=data['winner']).first()
-    winner.score = winner.score + 1
+    winner.score = plusOne(winner.score)
     DB.session.commit()
 
     loser = DB.session.query(
@@ -183,6 +182,13 @@ def on_setwinlosedraw(data):
     },
                   broadcast=True,
                   include_self=True)
+                  
+    
+def plusOne(score):
+    '''
+    Function receives an int and adds 1 to it, return.
+    '''
+    return score + 1
 
 
 # When a client emits the event 'reset_game' to the server, this function is run
@@ -194,9 +200,15 @@ def on_reset_game(data):
     '''
     print(data)
     #clear array when we receie the reset game event from the client.
-    BOARDUSERS.clear()
+    clearArray(BOARDUSERS)
     #gameState = True;
     socketio.emit('reset_game', data, broadcast=True, include_self=False)
+    
+def clearArray(fullarr):
+    '''
+    Function receives an array and returns empty array.
+    '''
+    return fullarr.clear()
 
 
 # Note we need to add this line so we can import APP in the python shell
