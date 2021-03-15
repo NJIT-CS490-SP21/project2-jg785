@@ -145,7 +145,7 @@ def add_user(username):
     #ordered_users = DB.session.query(models.Person).order_by(
      #   models.Person.score.desc()).all()
     #DB.session.commit()
-    
+
     all_people = models.Person.query.all()
 
     users = []

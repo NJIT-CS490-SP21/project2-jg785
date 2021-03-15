@@ -45,11 +45,11 @@ function Handler() {
 
   function onClickAddtoList() {
     const username = inputRef.current.value;
-    if (username === '') {
-      // eslint-disable-next-line
-      alert('Enter a valid name.');
-      return;
-    } if (username !== null) {
+    // if (username === '') {
+    // eslint-disable-next-line
+      // alert('Enter a valid name.');
+    // return;
+    if (username !== null) {
       setShown((prevShown) => !prevShown);
     }
 
