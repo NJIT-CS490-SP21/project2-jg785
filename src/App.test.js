@@ -10,3 +10,16 @@ test('Log in button dissapears', () => {
   fireEvent.click(Loginbuttonelement);
   expect(Loginbuttonelement).not.toBeInTheDocument();
 });
+
+test('Show or hide Leaderboard', () => {
+  const result = render(<App />);
+  
+  const LeaderboardElement = screen.getByText('Show/Hide Leaderboard');
+  fireEvent.click(LeaderboardElement);
+  const ScoreElement = screen.getByText('Score');
+  expect(ScoreElement).toBeInTheDocument();
+  
+  fireEvent.click(LeaderboardElement);
+  expect(ScoreElement).not.toBeInTheDocument();
+  
+});
