@@ -7,8 +7,8 @@ import sys
 # This lets you import from the parent directory (one level up)
 sys.path.append(os.path.abspath("../.."))
 
-import models
 from app import add_user
+from app import models
 from app import DB
 
 KEY_INPUT = "input"
@@ -21,6 +21,18 @@ class AddUserTestCase(unittest.TestCase):
             {
                 KEY_INPUT: 'naman',
                 KEY_EXPECTED: [INITIAL_USERNAME, 'naman'],
+            },
+            {
+                KEY_INPUT: 'jose',
+                KEY_EXPECTED: [INITIAL_USERNAME, 'naman', 'jose'],
+            },
+            {
+                KEY_INPUT: 'jhon',
+                KEY_EXPECTED: [INITIAL_USERNAME, 'naman', 'jose', 'jhon'],
+            },
+            {
+                KEY_INPUT: 'ta',
+                KEY_EXPECTED: [INITIAL_USERNAME, 'naman', 'jose', 'jhon', 'ta'],
             },
         ]
             
@@ -50,7 +62,9 @@ class AddUserTestCase(unittest.TestCase):
                         print(self.initial_db_mock)
                         print(expected_result)
                         self.assertEqual(len(actual_result), len(expected_result))
-                        self.assertEqual(actual_result[1], expected_result[1])
+                        self.assertEqual(actual_result[len(actual_result)-1], expected_result[len(expected_result)-1])
+
+
 
 
 if __name__ == '__main__':
