@@ -23,3 +23,16 @@ test('Show or hide Leaderboard', () => {
   expect(ScoreElement).not.toBeInTheDocument();
   
 });
+
+test('Player X and Player O', () => {
+  const result = render(<App />);
+  
+  const Loginbuttonelement = screen.getByText('Log in');
+  fireEvent.click(Loginbuttonelement);
+  
+  const playerXelement = screen.getByText('Player X:');
+  const playerOelement = screen.getByText('Player O has not connected yet.');
+  
+  expect(playerXelement).toBeInTheDocument();
+  expect(playerOelement).toBeInTheDocument();
+});
